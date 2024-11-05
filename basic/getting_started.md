@@ -89,8 +89,17 @@ root.render(<h1>Hello, React!!</h1>);
 
 
 ## トランスパイラの導入
-react, react-dom を導入しただけでは、JSX 記法で react コンポーネントを「書く」ことはできるが、JSX をブラウザに解釈させて「動かす（＝表示させる）」ことができない。
-これをブラウザが解釈できる状態に変換（＝トランスパイル）するツールを導入する。
+React では「JSX」という、JavaScript の中に HTML を直接記載できるような記法を採用している。
+
+react, react-dom を導入しただけでは、JSX 記法で react コンポーネントを「書く」ことはできるが、JSX を理解できないブラウザに解釈させて「動かす（＝表示させる）」ことができない。
+前述の例の中では、JavaScript の render 関数を実行しようとした時に、JavaScript の書き方が間違っているとして、以下の様なエラーがブラウザコンソールに表示されるはず。
+
+```bash
+# コンソールで表示されるシンタックス（構文）エラー
+script.js:6 Uncaught SyntaxError: Unexpected token '<'
+```
+
+これをブラウザが解釈できる状態（JavaScript）に変換（＝トランスパイル）するツール、「トランスパイラ」を導入する。
 今回は、トランスパイラとして **Babel** を採用する。
 
 babel のコアモジュールと react 用のプリセットを導入する
@@ -144,7 +153,7 @@ lite-server を導入する
 ```bash
 npm install --save-dev lite-server
 # または
-npm i -D npm lite-server
+npm i -D lite-server
 ```
 
 起動処理をスクリプト一覧に追加する（`lite-server` コマンドだけでも良いが、必ず事前にトランスパイルするように定義しておく）
@@ -223,3 +232,128 @@ npm run dev
 ```
 
 ブラウザでの表示確認ができれば、React を動かす最低限の環境構築は問題ない（ただし、開発作業のための環境であり、本番環境で利用できるものではないことに注意する）。
+
+
+## React の導入（node モジュール利用方式）
+
+HTML の title の下に書いていた CDN の読み込みを削除する（コメントアウトでもOK）
+```html
+<head>
+  :
+  <title>React Demo</title>
+  <!-- ↓↓ 以下を２つとも削除、または、コメントアウト ↓↓ -->
+  <!-- <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script> -->
+  <!-- <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script> -->
+</head>
+```
+
+react のコアモジュールを、node モジュールとして npm でインストール
+```bash
+npm install react react-dom
+# または以下
+npm i react react-dom
+```
+
+JS 処理を修正する（CDN の ReactDOM を削除し、node モジュールの ReactDOM を利用する）
+```js
+// const { createRoot } = ReactDOM; // ← CDN で利用していた１行を削除、または、コメントアウト
+import React from 'react'; // 追加
+import { createRoot } from 'react-dom/client'; // 追加
+
+// ブラウザの DOM ノード内に react コンポーネントのルートを作成
+const root = createRoot(document.getElementById('root'));
+// react ノードをレンダリング（＝表示）する
+root.render(<h1>Hello, React!!</h1>);
+```
+
+
+## モジュールバンドラーの導入
+node モジュールを利用して React のコードを書く場合、import 文を使用して node_modules から目的のモジュールを呼び出す。
+しかし、現在のブラウザ環境では ES6 モジュールの構文を解釈できるものの、`react-dom/client` のような Node.js 形式のモジュール解決を行えないために、以下のようなエラーが発生する。
+
+```bash
+Uncaught TypeError: Failed to resolve module specifier "react-dom/client". Relative references must start with either "/", "./", or "../".
+```
+
+上記の解決をするために、複数の分割された JavaScript モジュールを１つのファイルへ束ねる（＝バンドルする）ことができるツール、「モジュールバンドラー」を導入する。
+今回は、そのモジュールバンドラーとして **webpack** を採用する。
+
+webpack のコアモジュールと react 用のプリセットを導入する
+```bash
+npm install --save-dev webpack webpack-cli
+# または
+npm i -D webpack webpack-cli
+```
+
+webpack 単体であれば上記のみで良いが、今回は babel も使用しているため、webpack で babel を使用するためのローダー（loader）も導入する
+```bash
+npm install --save-dev babel-loader
+# または
+npm i -D babel-loader
+```
+
+webpack の設定ファイルを用意する
+```bash
+touch webpack.config.js
+```
+
+設定ファイルの中身を書く（今は中身を理解できなくても良い）
+```js
+const path = require('path');
+
+module.exports = {
+  mode: 'development',  // 開発モードを明示的に設定
+  entry: './script.jsx',  // エントリーポイントを設定
+  // 出力内容を設定
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+  },
+  // 処理対象を指定
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
+  module: {
+    rules: [
+      {
+        // 拡張子 jsx のファイル（正規表現）
+        test: /\.jsx?$/,
+        // ローダーの指定
+        loader: "babel-loader",
+      },
+    ],
+  },
+};
+```
+
+webpack はデフォルトで本番用（mode = production）で実行しようとするため、今回はあえて開発用であることを明示した。
+上記の設定により、バンドルを実行すると、成果物を dist というディレクトリの中に、bundle.js というファイル名で作ることになる。
+
+バンドルを実行する処理をスクリプト一覧に追加する
+```json
+"scripts": {
+  // 既存のスクリプトは省略
+
+  "build": "webpack", // 追加
+  "dev": "npm run build && lite-server" // バンドル後に起動するコマンドに変更
+}
+```
+
+出力されるファイル群は成果物であり、手作業で開発するファイルではないため、git のバージョン監視対象外としておくために `.gitignore` に以下を追記する
+```
+/dist
+```
+
+画面表示には、最終的にバンドルされた JavaScript を読み込むため、HTML のスクリプト参照先を変更しておく
+```html
+<body>
+  :
+  <!-- script タグのソースを compiled.js から dist/bundle.js に変更 -->
+  <script src="./dist/bundle.js" type="module"></script>
+</body>
+```
+
+問題なく動作するか、もう一度確認する
+```bash
+npm run dev
+```
