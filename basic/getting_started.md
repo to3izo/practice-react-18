@@ -116,7 +116,7 @@ touch babel.config.json
 トランスパイルを実行する処理をスクリプト一覧に追加する
 ```json
 "scripts": {
-  //既存のスクリプトは省略
+  // 既存のスクリプトは省略
 
   "trans": "babel script.js --out-file compiled.js" // 追加
 }
@@ -150,7 +150,7 @@ npm i -D npm lite-server
 起動処理をスクリプト一覧に追加する（`lite-server` コマンドだけでも良いが、必ず事前にトランスパイルするように定義しておく）
 ```json
 "scripts": {
-  //既存のスクリプトは省略
+  // 既存のスクリプトは省略
 
   "dev": "npm run trans && lite-server" // 追加
 }
@@ -183,8 +183,13 @@ module.exports = {
 
 ブラウザで表示確認する
 ```bash
+# 開発サーバを起動
 npm run dev
 ```
+
+→ Web ブラウザを開いて `http://localhost:3000` にアクセスし、"Hello, React!!" と表示されていれは成功（自動で立ち上がる場合もある）
+
+失敗している場合、ブラウザの「開発者ツール」を開いて「コンソール」表示でエラーの内容を確認し、理由や対処法をネットで検索したり、AI に尋ねたりしよう！
 
 （Optional）独自のファイル名で bs-config を用意する場合は、以下の様に設定ファイルを指定できる
 ```bash
@@ -201,6 +206,15 @@ lite-server -c configs/my-bs-config.js
 対象の JS ファイルの拡張子を JSX ファイルに変更する（トランスパイル後のファイルは JS であるため変えない）
 ```bash
 mv script.js script.jsx
+```
+
+トランスパイル時の内容も、正しい拡張子に修正する
+```json
+"scripts": {
+  // 省略
+
+  "trans": "babel script.jsx --out-file compiled.js", // jsx に変更
+}
 ```
 
 問題なく動作するか、もう一度確認する

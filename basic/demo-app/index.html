@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Demo</title>
+  <!-- React と ReactDOM の CDN を追加 -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+</head>
+<body>
+  <!-- ブラウザが JS 無効だった場合のための表示 -->
+  <noscript>JavaScript が利用できないブラウザ環境です</noscript>
+  <!-- React で利用するルート要素 -->
+  <div id="root"></div>
+  <!-- モジュラーな JavaScript として定義 (ES6 の ES モジュール宣言) -->
+  <script src="./compiled.js" type="module"></script>
+</body>
+</html>
