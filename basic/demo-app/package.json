@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "trans": "babel script.jsx --out-file compiled.js",
-    "dev": "npm run trans && lite-server"
+    "build": "webpack",
+    "dev": "npm run build && lite-server"
   },
   "keywords": [],
   "author": "",
@@ -14,9 +15,14 @@
   "dependencies": {
     "@babel/cli": "^7.25.9",
     "@babel/core": "^7.26.0",
-    "@babel/preset-react": "^7.25.9"
+    "@babel/preset-react": "^7.25.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "lite-server": "^2.6.1"
+    "babel-loader": "^9.2.1",
+    "lite-server": "^2.6.1",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
   }
 }

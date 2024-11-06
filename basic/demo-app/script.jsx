@@ -1,4 +1,6 @@
-const { createRoot } = ReactDOM;
+// const { createRoot } = ReactDOM; // CDN 利用時
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
 // ブラウザの DOM ノード内に react コンポーネントのルートを作成
 const root = createRoot(document.getElementById('root'));
