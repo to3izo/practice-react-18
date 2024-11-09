@@ -138,6 +138,11 @@ touch babel.config.json
 }
 ```
 
+出力されるファイル群は成果物であり、手作業で開発するファイルではないため、git のバージョン監視対象外としておくために `.gitignore` に以下を追記する
+```
+compiled.js
+```
+
 実行する
 ```bash
 npm run trans
@@ -270,7 +275,7 @@ npm i react@18 react-dom@18
 ```
 
 JS 処理を修正する（CDN の ReactDOM を削除し、node モジュールの ReactDOM を利用する）
-```js:script.js
+```js:script.jsx
 // const { createRoot } = ReactDOM; // ← CDN で利用していた１行を削除、または、コメントアウト
 import React from 'react'; // 追加
 import { createRoot } from 'react-dom/client'; // 追加
