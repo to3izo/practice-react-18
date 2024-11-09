@@ -48,7 +48,7 @@ touch {index.html,script.js}
 ```
 
 トップページとして、以下の通りに HTML の中身を書く
-```html
+```html:index.html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -71,7 +71,7 @@ touch {index.html,script.js}
 ## React の導入（CDN 利用方式）
 
 title の下に CDN で React の読み込みを追加する（CDN - unpkg を利用）
-```html
+```html:index.html
 <head>
   :
   <title>React Demo</title>
@@ -82,7 +82,7 @@ title の下に CDN で React の読み込みを追加する（CDN - unpkg を�
 ```
 
 JS 処理を書く
-```js
+```js:script.js
 const { createRoot } = ReactDOM;
 
 // ブラウザの DOM ノード内に react コンポーネントのルートを作成
@@ -123,14 +123,14 @@ touch babel.config.json
 ```
 
 設定ファイルの中身を書く
-```json
+```json:babel.config.json
 {
   "presets": ["@babel/preset-react"]
 }
 ```
 
 トランスパイルを実行する処理を package.json のスクリプト一覧に追加する
-```json
+```json:package.json
 "scripts": {
   // 既存のスクリプトは省略
 
@@ -144,7 +144,7 @@ npm run trans
 ```
 
 画面表示の準備として、トランスパイル後の JavaScript を読み込むように、HTML ファイルのスクリプト参照を変更しておく
-```html
+```html:index.html
 <body>
   :
   <!-- script タグのソースを script.js から compiled.js に変更 -->
@@ -167,7 +167,7 @@ npm i -D lite-server
 ```
 
 起動処理を package.json のスクリプト一覧に追加する（`lite-server` コマンドだけでも良いが、必ず事前にトランスパイルするように定義しておく）
-```json
+```json:package.json
 "scripts": {
   // 既存のスクリプトは省略
 
@@ -183,7 +183,7 @@ touch bs-config.json
 ```
 
 bs-config.json の中身を書く
-```js
+```js:bs-config.json
 {
   "server": {
     "baseDir": "./"
@@ -192,7 +192,7 @@ bs-config.json の中身を書く
 ```
 
 中身の書き方は、json の他に js ファイルでも用意できる（どちらかで良い）
-```js
+```js:bs-config.js
 module.exports = {
   server: {
     baseDir: "./"
@@ -228,7 +228,7 @@ mv script.js script.jsx
 ```
 
 トランスパイル時の内容も、正しい拡張子に修正する
-```json
+```json:package.json
 "scripts": {
   // 省略
 
@@ -247,7 +247,7 @@ npm run dev
 ## React の導入（node モジュール利用方式）
 
 HTML の title の下に書いていた CDN の読み込みを削除する（コメントアウトでもOK）
-```html
+```html:index.html
 <head>
   :
   <title>React Demo</title>
@@ -270,7 +270,7 @@ npm i react@18 react-dom@18
 ```
 
 JS 処理を修正する（CDN の ReactDOM を削除し、node モジュールの ReactDOM を利用する）
-```js
+```js:script.js
 // const { createRoot } = ReactDOM; // ← CDN で利用していた１行を削除、または、コメントアウト
 import React from 'react'; // 追加
 import { createRoot } from 'react-dom/client'; // 追加
@@ -319,7 +319,7 @@ touch webpack.config.js
 ```
 
 設定ファイルの中身を書く（今は中身を理解できなくても良い）
-```js
+```js:webpack.config.js
 const path = require('path');
 
 module.exports = {
@@ -351,7 +351,7 @@ webpack はデフォルトで本番用（mode = production）で実行しよう�
 上記の設定により、バンドルを実行すると、成果物を dist というディレクトリの中に、bundle.js というファイル名で作ることになる。
 
 バンドルを実行する処理を package.json のスクリプト一覧に追加する
-```json
+```json:package.json
 "scripts": {
   // 既存のスクリプトは省略
 
@@ -366,7 +366,7 @@ webpack はデフォルトで本番用（mode = production）で実行しよう�
 ```
 
 画面表示には、最終的にバンドルされた JavaScript を読み込むため、HTML のスクリプト参照先を変更しておく
-```html
+```html:index.html
 <body>
   :
   <!-- script タグのソースを compiled.js から dist/bundle.js に変更 -->
