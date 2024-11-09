@@ -105,8 +105,11 @@ script.js:6 Uncaught SyntaxError: Unexpected token '<'
 babel のコアモジュールと react 用のプリセットを導入する
 ```bash
 # 開発用依存関係としてインストール
-npm install --seve-dev @babel/core @babel/cli @babel/preset-react
-# または
+npm install --save-dev @babel/core @babel/cli @babel/preset-react
+```
+
+または、省略形コマンド
+```bash
 npm i -D @babel/core @babel/cli @babel/preset-react
 ```
 
@@ -152,7 +155,10 @@ type="module" 指定による ES Module を使う方法では、セキュリテ�
 lite-server を導入する
 ```bash
 npm install --save-dev lite-server
-# または
+```
+
+または、省略形コマンド
+```bash
 npm i -D lite-server
 ```
 
@@ -250,7 +256,10 @@ HTML の title の下に書いていた CDN の読み込みを削除する（コ
 react のコアモジュールを、node モジュールとして npm でインストール
 ```bash
 npm install react react-dom
-# または以下
+```
+
+または、省略形コマンド
+```bash
 npm i react react-dom
 ```
 
@@ -281,14 +290,20 @@ Uncaught TypeError: Failed to resolve module specifier "react-dom/client". Relat
 webpack のコアモジュールと react 用のプリセットを導入する
 ```bash
 npm install --save-dev webpack webpack-cli
-# または
+```
+
+または、省略形コマンド
+```bash
 npm i -D webpack webpack-cli
 ```
 
 webpack 単体であれば上記のみで良いが、今回は babel も使用しているため、webpack で babel を使用するためのローダー（loader）も導入する
 ```bash
 npm install --save-dev babel-loader
-# または
+```
+
+または、省略形コマンド
+```bash
 npm i -D babel-loader
 ```
 
