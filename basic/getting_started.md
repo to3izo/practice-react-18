@@ -254,13 +254,15 @@ HTML の title の下に書いていた CDN の読み込みを削除する（コ
 ```
 
 react のコアモジュールを、node モジュールとして npm でインストール
+
+最新のバージョンが v19 以降になった時のために `@18` で明示的にバージョンを指定する（未指定の場合は最新のバージョンとなる）
 ```bash
-npm install react react-dom
+npm install react@18 react-dom@18
 ```
 
 または、省略形コマンド
 ```bash
-npm i react react-dom
+npm i react@18 react-dom@18
 ```
 
 JS 処理を修正する（CDN の ReactDOM を削除し、node モジュールの ReactDOM を利用する）
