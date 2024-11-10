@@ -392,6 +392,7 @@ npm run dev
 開発作業において、変更をリアルタイムに確認できることは非常に便利であり、これが無いと非効率なものとなってしまう。
 
 Webpack では、Hot Module Replacement (HMR) という技術がこれに該当し、公式の DevServer モジュールを追加することでホットリロードを実現できる。
+尚、「リロード」と言っても、ページ全体を再読込しているのではなく、該当箇所だけに変更を反映するように効率的な変更が行われる。
 
 webpack-dev-server を導入する
 ```bash
@@ -464,3 +465,103 @@ npm run serve
 ```
 
 script.jsx の ファイルの H1 タグの中身を任意の内容に変更し、保存後に画面へ自動で反映されたら成功。
+
+## HMR 機能をインメモリで動作させる
+現在の HTML ファイルは、React で作られたコンポーネントを画面に表示するために、script タグで dist 内のファイルを参照するように書いている。
+これは、（ディスク上の）物理ファイルを参照するため、ファイルが存在しないと機能しない。
+
+そのため、前述の方法では、物理ファイルが存在しなければ、自動で bandle.js を作成するようにファイル書き込み機能（writeToDisk）を有効にした。
+しかし、これでは、ホットリロードは実現できるが、毎回不要なファイルを生成してしまう。
+
+これを回避するために、まず、バンドル後の JS の出力先を、ディスク上の物理ファイルではなく、メモリ上に出力されるデータに変更し、HTML 上でファイルを直接指定することをやめる。
+更に、バンドルされた最終的な JS ファイルが、自動的に HTML に挿入されるような設定に変更する。
+
+webpack-dev-server は、本来、上記のように「インメモリ（メモリ上）」で動作させることが通常の利用方法である。
+インメモリでホットリロードを実現する主なメリットは、特に以下の２点。
+
+- 不要な実ファイルを生成しない
+- 簡潔：JS の実ファイル指定を明記せずに自動化できるため、HTML をより簡潔に書ける
+- 高速：メモリ利用の方法は、ディスクI/O（物理ファイルの読み書き）が発生する方法よりも動作が速い
+
+上記を実現するプラグイン html-webpack-plugin を導入する
+```bash
+npm install --save-dev html-webpack-plugin
+```
+
+または、省略形コマンド
+```bash
+npm i -D html-webpack-plugin
+```
+
+webpack.config.js の設定を修正する
+```js:webpack.config.js
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin'); // 追加
+
+module.exports = {
+  mode: 'development', // 開発モードを明示的に設定
+  entry: './script.jsx', // エントリーポイントを設定
+  // 出力内容を設定
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+    // clean: true, // 削除
+  },
+  // 処理対象を指定
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
+  module: {
+    rules: [
+      {
+        // 拡張子 jsx のファイル（正規表現）
+        test: /\.jsx?$/,
+        // ローダーの指定
+        loader: "babel-loader",
+      },
+    ],
+  },
+  // プラグインと対象 HTML のパスを追加
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './index.html',
+    })
+  ],
+  devServer: {
+    static: {
+      directory: path.join(__dirname), // index.html がある場所を指定
+    },
+    // 以下の設定を削除
+    // devMiddleware: {
+    //   writeToDisk: true,
+    // },
+    hot: true,  // HMR を有効化
+    port: 3001, // 起動時のポート番号を指定（任意の番号） 
+    open: true, // 起動時に自動でブラウザ表示
+  }
+};
+```
+
+具体的な変更点は以下
+
+- html-webpack-plugin をインポート
+- plugins プロパティを追加し、インストールしたプラグインを設定
+  - 対象の HTML ファイルも指定
+- 以下の設定は不要となるので削除
+  - output.clean
+  - devServer.devMiddleware
+
+HTML ファイルのスクリプトタグは不要となるため削除する
+```html:index.html
+<body>
+  :
+  <div id="root"></div>
+  <!-- ↓↓ 以下を削除、または、コメントアウト ↓↓ -->
+  <!-- <script src="./dist/bundle.js" type="module"></script> -->
+</body>
+```
+
+実際に起動し、動作確認する
+```bash
+npm run serve
+```
