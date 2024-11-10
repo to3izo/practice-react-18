@@ -1,0 +1,8 @@
+# node モジュール
+node_modules
+
+# ビルドファイル出力先
+/dist
+
+# トランスパイル後のファイル
+compiled.js
