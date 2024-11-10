@@ -383,3 +383,84 @@ webpack はデフォルトで本番用（mode = production）で実行しよう�
 ```bash
 npm run dev
 ```
+
+## ホットリロード機能を追加してみる
+本手順は、React の動作に必要な内容ではなく、開発作業を効率化するための機能追加の実践である
+
+開発サーバが起動中にソースコードを変更しても、そこからトランスパイルやバンドルが完了したものが表示されているため、変更内容は再起動するまで画面に反映されない。
+しかし、変更の保存と同時に、該当箇所の表示や処理内容をリアルタイムに反映する機能を追加することが出来、こういった機能は一般には「ホットリロード」などと呼ばれる。
+開発作業において、変更をリアルタイムに確認できることは非常に便利であり、これが無いと非効率なものとなってしまう。
+
+Webpack では、Hot Module Replacement (HMR) という技術がこれに該当し、公式の DevServer モジュールを追加することでホットリロードを実現できる。
+
+webpack-dev-server を導入する
+```bash
+npm install --save-dev webpack-dev-server
+```
+
+または、省略形コマンド
+```bash
+npm i -D webpack-dev-server
+```
+
+webpack.config.js に設定を追加する
+```js:webpack.config.js
+const path = require('path');
+
+module.exports = {
+  mode: 'development',
+  entry: './script.jsx',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+    clean: true, // 起動する度に dist をクリーンアップする
+  },
+  resolve: {
+    extensions: ['.js', '.jsx']
+  },
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        loader: "babel-loader",
+      },
+    ],
+  },
+  // 以下を追加
+  devServer: {
+    static: {
+      directory: path.join(__dirname), // index.html がある場所を指定
+    },
+    devMiddleware: {
+      writeToDisk: true,
+    },
+    hot: true,  // HMR を有効化
+    port: 3001, // 起動時のポート番号を指定（任意の番号） 
+    open: true, // 起動時に自動でブラウザ表示
+  }
+};
+```
+
+具体的な変更点は以下
+
+- devServer プロパティを一式追加する
+- devServer.devMiddleware.writeToDisk を有効にすることで、初回起動時に dist 内にファイルを自動生成する
+  - webpack-dev-server は、デフォルトでは、勝手にファイルを生成したりしない最低限の機能に制限されているため、dist に対象ファイルがないと機能しない
+- output.clean を追加し、起動時に dist を初期化する設定を追加
+  - writeToDisk の利用によって、変更保存の度に dist 内に新しいファイルが毎回生成されてしまうため
+
+webpack-dev-server で起動する専用コマンドを package.json のスクリプト一覧に追加する
+```json:package.json
+"scripts": {
+  // 既存のスクリプトは省略
+
+  "serve": "webpack serve" // 追加
+}
+```
+
+実際に起動し、動作確認する
+```bash
+npm run serve
+```
+
+script.jsx の ファイルの H1 タグの中身を任意の内容に変更し、保存後に画面へ自動で反映されたら成功。
