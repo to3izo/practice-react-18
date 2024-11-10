@@ -1,4 +1,3 @@
-// const { createRoot } = ReactDOM; // CDN 利用時
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 

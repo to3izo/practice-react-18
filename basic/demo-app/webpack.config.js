@@ -1,4 +1,5 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',  // 開発モードを明示的に設定
@@ -15,11 +16,24 @@ module.exports = {
   module: {
     rules: [
       {
-        // 拡張子 jsx のファイル（正規表現）
         test: /\.jsx?$/,
-        // ローダーの指定
-        loader: "babel-loader",
+        loader: "babel-loader", // ローダーの指定 (Babel)
       },
     ],
   },
+  // html-webpack-plugin 設定
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './index.html',
+    })
+  ],
+  // webpack-dev-server 設定
+  devServer: {
+    static: {
+      directory: path.join(__dirname), // index.html がある場所を指定
+    },
+    hot: true,  // HMR を有効化
+    port: 3001, // 起動時のポート番号を指定（任意の番号） 
+    open: true, // 起動時に自動でブラウザ表示
+  }
 };

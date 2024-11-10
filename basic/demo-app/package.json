@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "trans": "babel script.jsx --out-file compiled.js",
     "build": "webpack",
-    "dev": "npm run build && lite-server"
+    "dev": "npm run build && lite-server",
+    "serve": "webpack serve"
   },
   "keywords": [],
   "author": "",
@@ -21,8 +22,10 @@
   },
   "devDependencies": {
     "babel-loader": "^9.2.1",
+    "html-webpack-plugin": "^5.6.3",
     "lite-server": "^2.6.1",
     "webpack": "^5.96.1",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
   }
 }
